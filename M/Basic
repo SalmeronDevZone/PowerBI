@@ -1,0 +1,95 @@
+
+// Cargar hoja Excel
+
+let
+    // Cargar archivo Excel
+    Source = Excel.Workbook(File.Contents("C:\Usuarios\Usuario\Documentos\ventas.xlsx"), null, true),
+    
+    // Seleccionar la hoja "Datos"
+    HojaDatos = Source{[Item="Datos", Kind="Sheet"]}[Data]
+in
+    HojaDatos
+
+
+//Filtra filas por condicion
+
+let
+    Source = Table.FromRecords({
+        [Nombre="Ana", Ventas=100],
+        [Nombre="Luis", Ventas=250],
+        [Nombre="María", Ventas=90]
+    }),
+
+    // Filtrar ventas mayores a 100
+    Filtrado = Table.SelectRows(Source, each [Ventas] > 100)
+in
+    Filtrado
+
+
+//Eliminar columnas
+
+let
+    Source = Csv.Document(File.Contents("clientes.csv"), [Delimiter=",", Encoding=65001]),
+    ColumnasQuitadas = Table.RemoveColumns(Source, {"Teléfono", "Dirección"})
+in
+    ColumnasQuitadas
+
+
+// Columna calculada
+
+let
+    Source = Table.FromRecords({
+        [Producto="A", Precio=10, Cantidad=2],
+        [Producto="B", Precio=15, Cantidad=3]
+    }),
+
+    // Crear columna Total = Precio * Cantidad
+    ConTotal = Table.AddColumn(Source, "Total", each [Precio] * [Cantidad])
+in
+    ConTotal
+
+
+// Cambiar tipo de datos
+
+
+let
+    Source = Table.FromRecords({
+        [Nombre="Pedro", Edad="25"]
+    }),
+
+    // Convertir Edad de texto a número
+    TiposConvertidos = Table.TransformColumnTypes(Source, {{"Edad", Int64.Type}})
+in
+    TiposConvertidos
+
+
+// Renombrar columnas 
+
+let
+    Source = Table.FromRecords({
+        [NombreCliente="Laura", Compra=200]
+    }),
+
+    ColumnasRenombradas = Table.RenameColumns(Source, {{"NombreCliente", "Cliente"}, {"Compra", "Monto"}})
+in
+    ColumnasRenombradas
+
+
+// Combinar columnas 
+
+let
+    Clientes = Table.FromRecords({
+        [ID=1, Nombre="Carlos"],
+        [ID=2, Nombre="Lucía"]
+    }),
+
+    Ventas = Table.FromRecords({
+        [ID=1, Monto=300],
+        [ID=2, Monto=500]
+    }),
+
+    // Combinar por la columna ID
+    Unida = Table.NestedJoin(Clientes, {"ID"}, Ventas, {"ID"}, "DatosVentas", JoinKind.Inner),
+    Expandida = Table.ExpandTableColumn(Unida, "DatosVentas", {"Monto"})
+in
+    Expandida
