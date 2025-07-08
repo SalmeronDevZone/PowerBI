@@ -1,0 +1,50 @@
+Create a Microsoft Fabric Lakehouse	
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/01-lakehouse.html
+
+Analyze data with Apache Spark in Fabric	
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/02-analyze-spark.html
+
+Use Delta Tables in Apache Spark
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/03-delta-lake.html
+
+Ingest data with a pipeline in Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/04-ingest-pipeline.html
+
+Creación y uso de flujos de datos (Gen2) en Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric.es-es/Instructions/Labs/05-dataflows-gen2.html
+
+Analyze data in a data warehouse
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/06-data-warehouse.html
+
+Get started with Real-Time Intelligence in Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/07-real-time-Intelligence.html
+
+Get started with data science in Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/08-data-science-get-started.html
+
+Load data into a warehouse using T-SQL
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/06a-data-warehouse-load.html
+Query a data warehouse in Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/06b-data-warehouse-query.html
+
+Monitor a data warehouse in Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/06c-monitor-data-warehouse.html
+
+Secure a Microsoft Fabric data warehouse
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/06d-secure-data-warehouse.html
+
+Ejercicio: Creación de cálculos DAX en Power BI Desktop
+https://learn.microsoft.com/es-es/training/modules/dax-power-bi-add-measures/5b-lab
+
+Ejercicio: Diseño de un modelo semántico escalable
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/15-design-scalable-semantic-models.html
+
+Create reusable Power BI assets
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/16-create-reusable-power-bi-assets.html
+
+Ejercicio: Aplicación de seguridad de los modelos
+https://learn.microsoft.com/es-es/training/modules/enforce-power-bi-model-security/4a-exercise-enforce-model-security
+
+Secure data access in Microsoft Fabric
+https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/19-secure-data-access.html
+
