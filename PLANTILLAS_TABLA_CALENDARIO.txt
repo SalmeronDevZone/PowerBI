@@ -1,0 +1,144 @@
+01-Calendario = 
+ADDCOLUMNS(
+    CALENDAR(
+        
+        MIN(Sales[Date]),
+        MAX(Sales[Date])),
+
+        "Año", YEAR([Date]),
+        "Mes", MONTH([Date]),
+        "Trimestre", QUARTER([Date]),
+        "Día", DAY([Date]),
+        "Dia de la semana", WEEKDAY([Date]),
+        "Nombre del mes", FORMAT([Date],"MMMM"),
+        "Trimestre-letras", 
+            SWITCH(
+                QUARTER([Date]), 
+                1, "Primero",
+                2, "Segundo",
+                3, "Tercero",
+                4, "Cuarto",
+                 "Fallo en trimestre")
+)
+
+
+02-dimFechas = 
+
+--Variables para almacenar los años mínimo y máximo---------------
+VAR _ejercicioMin =     YEAR( MIN( factPedidos[fechaPedido] ) )
+VAR _ejercicioMax =     YEAR( MAX( factPedidos[fechaPedido] ) )
+
+--Variables para almacenar las fechas mínima y máxima-------------
+VAR _fechaMin =         DATE( _ejercicioMin, 1, 1 )
+VAR _fechaMax =         DATE( _ejercicioMax, 12, 31 )
+
+--Variable para determinar el primer mes fiscal-------------------
+VAR _primerMesFisc =    7  --Adaptar según necesidades
+
+RETURN
+
+ADDCOLUMNS (
+    --Generación de tabla para columna de fecha-------------------
+    CALENDAR ( _fechaMin, _fechaMax ),
+
+    --Generación de columnas--------------------------------------
+    "Año",              YEAR( [Date] ),
+    "Trimestre",        "Trim-" & QUARTER( [Date] ),
+    "Nombre mes",       FORMAT( [Date], "mmm" ),
+    "N.º mes",          MONTH( [Date] ),
+    "Mes-año",          FORMAT( [Date], "mmm-yy" ),
+    "N.º año-mes",      VALUE( FORMAT( [Date], "yyyymm" ) ),
+    "Nombre día semana",FORMAT( [Date], "DDDD" ),
+    "N.º día semana",   WEEKDAY( [Date], 2 ),
+                        --Adaptar según necesidades
+
+    --Otras columnas complementarias------------------------------
+    "Es día laborable", IF(
+                            WEEKDAY( [Date], 2 ) <= 5,
+                            --Adaptar según necesidades
+                            "Día laborable",
+                            "Fin de semana"
+                        ),
+    "Semana del año",   WEEKNUM( [Date], 21 ),
+                        --Adaptar según necesidades
+    "Semestre",         IF(
+                            MONTH( [Date] ) <= 6,
+                            "Semestre 1",
+                            "Semestre 2"
+                        ),
+
+    --OPCIONAL: clave subrogada para relacionar-------------------
+    "IDS_fecha",        YEAR( [Date] ) * 10000 + 
+                        MONTH( [Date] ) * 100 + 
+                        DAY( [Date] ),
+
+    --Columnas para gestión de años fiscales----------------------
+    "Año fiscal",       IF(
+                            MONTH( [Date] ) >= _primerMesFisc,
+                            "AF " & YEAR( [Date] ) + 1,
+                            "AF " & YEAR( [Date] )
+                        ),
+    "Semestre fiscal",  VAR _mesFiscal = MOD(
+                                            MONTH( [Date] ) -
+                                            _primerMesFisc + 12,
+                                            12
+                                        )
+                                        + 1
+                        RETURN
+                        "Semestre " &
+                        IF( _mesFiscal <= 6, 1, 2),
+    "Trim. fiscal",     VAR _mesFiscal =    MOD(
+                                                MONTH( [Date] ) -
+                                                _primerMesFisc + 12,
+                                                12
+                                            )
+                                            + 1
+                        RETURN
+                        "Trim-" &
+                        SWITCH(
+                            TRUE(),
+                            _mesFiscal >= 1 && _mesFiscal <= 3, 1,
+                            _mesFiscal >= 4 && _mesFiscal <= 6, 2,
+                            _mesFiscal >= 7 && _mesFiscal <= 9, 3,
+                            4
+                        )
+)
+
+
+
+
+
+------------ TABLA CALENDARIO CON M ( Mejor rendimiento en el modelo de datos ) ------------
+
+
+
+let
+    // 1. Obtener fechas mínimas y máximas de la tabla Sales
+    FechaMin = List.Min(Sales[Date]),
+    FechaMax = List.Max(Sales[Date]),
+
+    // 2. Crear lista de fechas entre el mínimo y máximo
+    ListaFechas = List.Dates(FechaMin, Duration.Days(FechaMax - FechaMin) + 1, #duration(1,0,0,0)),
+
+    // 3. Convertir la lista a tabla
+    TablaFechas = Table.FromList(ListaFechas, Splitter.SplitByNothing(), {"Fecha"}),
+
+    // 4. Agregar columnas derivadas
+    TablaExpandida = Table.TransformColumns(
+        Table.AddColumn(TablaFechas, "Año", each Date.Year([Fecha])),
+        {{"Fecha", each _, type date}}
+    ),
+    ConMes = Table.AddColumn(TablaExpandida, "Mes", each Date.Month([Fecha])),
+    ConTrimestre = Table.AddColumn(ConMes, "Trimestre", each Date.QuarterOfYear([Fecha])),
+    ConDia = Table.AddColumn(ConTrimestre, "Día", each Date.Day([Fecha])),
+    ConDiaSemana = Table.AddColumn(ConDia, "Día de la semana", each Date.DayOfWeek([Fecha]) + 1),
+    ConNombreMes = Table.AddColumn(ConDiaSemana, "Nombre del mes", each Date.ToText([Fecha], "MMMM", "es-ES")),
+    ConTrimestreLetras = Table.AddColumn(ConNombreMes, "Trimestre-letras", each 
+        if [Trimestre] = 1 then "Primero"
+        else if [Trimestre] = 2 then "Segundo"
+        else if [Trimestre] = 3 then "Tercero"
+        else if [Trimestre] = 4 then "Cuarto"
+        else "Fallo en trimestre"
+    )
+in
+    ConTrimestreLetras
